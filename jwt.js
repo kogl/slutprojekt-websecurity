@@ -1,36 +1,26 @@
 const jwt = require('jsonwebtoken')
-const express = require('express')
-const app = express()
 
-app.post('/auth', (req,res) => {
-    // const token = Sign some random payload 
-    const token = jwt.sign({random:'shit'}, 'mysecret')
-    res.json({token})
+function verifyToken(req, res, next){
+    const bearerHeader = req.headers['authorization']
+    if(typeof bearerHeader !== 'undefined'){
+        const bearer = bearerHeader.split(' ')
+
+
+        bearerToken = bearer[1] 
+        req.token = bearerToken
+        next();
+    }else{
+        res.send(403)
+    } 
+}
+
+
+jwt.sign({user}, 'secretkey', {expiresIn: '15m'}, (err, token )=>{
+    res.json({
+        token
+    })
 })
-
-app.get('/verify', (req,res) => {
-    // Read the Authorization Header
-    const authHeader = req.headers.authorization
-    // Extract the token from header
-    const token = authHeader.replace("Bearer ", "") // const token = authHeader.slice(7, authHeader.length)
-    // Decrypt token
-    const decrypted = jwt.verify(token, 'mysecret')
-    // Read Issued At Time from token
-    const time = decrypted.iat
-    // Send response
-    res.send(`Your token was issued at: ${time}` )
-})
-
-
-app.listen(8080)
-
-
-
-
-
-
-
-
+// app.listen(8080)
 // let payload = {
 //     userId: 40,
 //     username: "Kallebanan"
